@@ -9,6 +9,8 @@ This Project is simple todo API with upload attachment feature.
 
 ### Requirements
 - Golang version 1.21+ (https://golang.org/)
+- MySQL Database 5.7.22 or above
+- Google Cloud Storage
 
 
 ### Installing
