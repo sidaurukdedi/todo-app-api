@@ -9,12 +9,13 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	"todo-app-api/cmd/task/v1"
+	"todo-app-api/cmd/user/v1"
 	"todo-app-api/configs"
 	"todo-app-api/pkg/hook"
 	"todo-app-api/pkg/middleware"
 	"todo-app-api/pkg/response"
 	"todo-app-api/server"
-	"todo-app-api/task/v1"
 
 	gcs "cloud.google.com/go/storage"
 	"github.com/go-playground/validator/v10"
@@ -91,6 +92,10 @@ func main() {
 	taskRepository := task.NewTaskRepository(logger, dbReadOnly, dbReadWrite, "task")
 	taskUsecase := task.NewTaskUsecase(logger, cfg.Application.Timezone, gcs, taskRepository)
 	task.NewTaskHTTPHandler(logger, router, basicAuthMiddleware, validator, taskUsecase)
+
+	userRepository := user.NewUserRepository(logger, dbReadOnly, dbReadWrite, "user_encrypt")
+	userUsecase := user.NewUserUsecase(logger, cfg.Application.Timezone, userRepository)
+	user.NewUserHTTPHandler(logger, router, basicAuthMiddleware, validator, userUsecase)
 
 	handler := middleware.ClientDeviceMiddleware(router)
 	// set cors
