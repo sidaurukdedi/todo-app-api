@@ -9,7 +9,8 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-	"todo-app-api/cmd/task/v1"
+	taskV1 "todo-app-api/cmd/task/v1"
+	taskV2 "todo-app-api/cmd/task/v2"
 	"todo-app-api/cmd/user/v1"
 	"todo-app-api/configs"
 	"todo-app-api/pkg/hook"
@@ -89,9 +90,13 @@ func main() {
 	// validator.RegisterValidation("idn-mobile-number", customvalidator.SetIDNMobileNumber)
 	// validator.RegisterValidation("ISO8601date", customvalidator.SetISO8601dateFormat)
 
-	taskRepository := task.NewTaskRepository(logger, dbReadOnly, dbReadWrite, "task")
-	taskUsecase := task.NewTaskUsecase(logger, cfg.Application.Timezone, gcs, taskRepository)
-	task.NewTaskHTTPHandler(logger, router, basicAuthMiddleware, validator, taskUsecase)
+	taskRepositoryV1 := taskV1.NewTaskRepository(logger, dbReadOnly, dbReadWrite, "task")
+	taskUsecaseV1 := taskV1.NewTaskUsecase(logger, cfg.Application.Timezone, gcs, taskRepositoryV1)
+	taskV1.NewTaskHTTPHandler(logger, router, basicAuthMiddleware, validator, taskUsecaseV1)
+
+	taskRepositoryV2 := taskV2.NewTaskRepository(logger, dbReadOnly, dbReadWrite, "task")
+	taskUsecaseV2 := taskV2.NewTaskUsecase(logger, cfg.Application.Timezone, gcs, taskRepositoryV2)
+	taskV2.NewTaskHTTPHandler(logger, router, basicAuthMiddleware, validator, taskUsecaseV2)
 
 	userRepository := user.NewUserRepository(logger, dbReadOnly, dbReadWrite, "user_encrypt")
 	userUsecase := user.NewUserUsecase(logger, cfg.Application.Timezone, userRepository)
